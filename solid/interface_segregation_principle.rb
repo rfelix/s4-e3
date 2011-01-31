@@ -1,10 +1,10 @@
 # Interface Segregation Principle
 #
-# The ISP was removed from the LSP example by defining a protocol
+# The ISP was removed from the LSP example by using a "protocol"
 # where Subclasses of Operation can identify their textual operator
 # be defining the belongs_to? method.
 #
-# This was the Calclator object doesn't rely or have any dependency
+# This way the Calclator object doesn't rely or have any dependency
 # on any Operation subclass. Instead, it uses a small "interface" to
 # identify which of the available operations can be used to calculate
 # the specified equation.

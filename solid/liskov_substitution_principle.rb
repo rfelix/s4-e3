@@ -2,8 +2,7 @@
 #
 # Operation is the base class that the rest of the operations
 # inherit from. As long as they define the calculate method that
-# accepts two integers and returns a result, the LSP violation
-# won't be violated.
+# accepts two integers and returns a result, the LSP won't be violated.
 #
 # This is why the operation variable is defined using a case
 # statement, because any of the subclasses can be used as if

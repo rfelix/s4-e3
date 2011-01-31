@@ -1,69 +1,67 @@
 # Liskov Substitution Principle
 #
-# The AdditionOperation is the main operation class that can
-# add two numbers together.
+# Operation is the base class that the rest of the operations
+# inherit from. As long as they define the calculate method that
+# accepts two integers and returns a result, the LSP violation
+# won't be violated.
 #
-# Because of the methods it defines, we can easily create subclasses
-# that override just two methods (accepted_regexp and perform_operation)
-# in order to provide support for new operations (OCP present here too).
-#
-# Because the new subclasses SubtractionOperation and MultiplicationOperation
-# don't don't do anything they're not supposed to, they can be used anywhere
-# the AdditionOperation class is used.
+# This is why the operation variable is defined using a case
+# statement, because any of the subclasses can be used as if
+# we were using the parent Operation class. So once we've
+# identified the right operation class, we just call the calculate
+# method and supply the right arguments.
 
 require 'minitest/autorun'
 
 class Calculator
-  def initialize(operation = AdditionOperation.new)
-    @operation = operation
+  def initialize
+  end
+
+  def parse(str)
+    m = /(\d+) (.) (\d+)/.match(str)
+    { :op => m[2], :a => m[1].to_i, :b => m[3].to_i}
   end
 
   def calculate(str)
-    result = "error"
-
-    result = @operation.calculate(str)
+    args = parse(str)
+    operation = case args[:op]
+                 when '+'
+                   AdditionOperation.new
+                 when '-'
+                   SubtractionOperation.new
+                 when '*'
+                   MultiplicationOperation.new
+                 else
+                   Operation.new
+                 end
+    result = operation.calculate(args[:a], args[:b])
 
     puts result
     result
   end
 end
 
-class AdditionOperation
-  def accepts_str?(str)
-    str =~ accepted_regexp
+class Operation
+  def calculate(a, b)
+    raise "Unknown Operation"
   end
+end
 
-  def calculate(str)
-    m = accepted_regexp.match(str)
-    perform_operation(m[1].to_i, m[2].to_i)
-  end
-
-  def perform_operation(a,b)
+class AdditionOperation < Operation
+  def calculate(a,b)
     a + b
   end
-
-  def accepted_regexp
-    /(\d+) \+ (\d+)/
-  end
 end
 
-class SubtractionOperation < AdditionOperation
-  def perform_operation(a,b)
+class SubtractionOperation < Operation
+  def calculate(a,b)
     a - b
   end
-
-  def accepted_regexp
-    /(\d+) \- (\d+)/
-  end
 end
 
-class MultiplicationOperation < AdditionOperation
-  def perform_operation(a,b)
+class MultiplicationOperation < Operation
+  def calculate(a,b)
     a * b
-  end
-
-  def accepted_regexp
-    /(\d+) \* (\d+)/
   end
 end
 
@@ -74,12 +72,12 @@ describe Calculator do
   end
 
   it "should subtract two numbers" do
-    calculator = Calculator.new SubtractionOperation.new
+    calculator = Calculator.new
     assert_equal -2, calculator.calculate("2 - 4")
   end
 
   it "should multiply two numbers" do
-    calculator = Calculator.new MultiplicationOperation.new
+    calculator = Calculator.new
     assert_equal 8, calculator.calculate("2 * 4")
   end
 end

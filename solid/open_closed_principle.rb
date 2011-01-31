@@ -14,6 +14,10 @@ require 'stringio'
 
 
 class Calculator
+  def initialize(&block)
+    @print_block = block || lambda { |r| puts r }
+  end
+
   def calculate(str, &block)
     result = "error"
 
@@ -21,11 +25,7 @@ class Calculator
       result = $1.to_i + $2.to_i
     end
 
-    if block
-      block.call(result)
-    else
-      puts result
-    end
+    @print_block.call(result)
 
     result
   end
@@ -33,34 +33,24 @@ end
 
 
 describe Calculator do
-  before do
-    @calculator = Calculator.new
-  end
-
-  def capture_output
-    old_stdout = $stdout
-    new_stdout = StringIO.new
-    $stdout = new_stdout
-    yield
-    $stdout = old_stdout
-    new_stdout.string
-  end
-
   it "should add two numbers" do
-    output = capture_output do
-      assert_equal 6, @calculator.calculate("2 + 4")
+    calculator = Calculator.new
+    output, err = capture_io do
+      assert_equal 6, calculator.calculate("2 + 4")
     end
 
     assert_equal "6\n", output
   end
 
   it "should print a box around the addition of two numbers" do
-    output = capture_output do
-      assert_equal 6, @calculator.calculate("2 + 4") { |result|
-        puts "*" * (result.to_s.length + 4)
-        puts "* #{result} *"
-        puts "*" * (result.to_s.length + 4)
-      }
+    calculator = Calculator.new do |result|
+      puts "*" * (result.to_s.length + 4)
+      puts "* #{result} *"
+      puts "*" * (result.to_s.length + 4)
+    end
+
+    output, err = capture_io do
+      assert_equal 6, calculator.calculate("2 + 4")
     end
 
     assert_equal "*****\n* 6 *\n*****\n", output

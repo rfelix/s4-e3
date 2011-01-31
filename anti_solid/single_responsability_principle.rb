@@ -1,7 +1,7 @@
 # Anti Single Responsability Principle
 #
 # Calculator
-#   Is responsible for taking the input, calculating the result
+#   Is responsible for parsing the input, calculating the result
 #   and then printing it
 
 require 'minitest/autorun'

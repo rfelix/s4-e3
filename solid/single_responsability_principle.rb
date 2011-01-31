@@ -5,19 +5,15 @@
 # ResultPrinter
 #   Is just responsible for printing the result on the screen
 # Calculator
-#   Is just responsible for printing the users calculation
+#   Is just responsible for parsing the equations and gluing the
+#   Printing and Operation components together to make the calculator...
+#   well... calculate.
 
 require 'minitest/autorun'
 
 class AdditionOperation
-  def calculate(str)
-    result = "error"
-
-    if str =~ /(\d+) \+ (\d+)/
-      result = $1.to_i + $2.to_i
-    end
-
-    result
+  def calculate(a, b)
+    a + b
   end
 end
 
@@ -33,8 +29,14 @@ class Calculator
     @printer   = ResultPrinter.new
   end
 
+  def parse(str)
+    m = /(\d+) (\+) (\d+)/.match(str)
+    { :op => m[2], :a => m[1].to_i, :b => m[3].to_i}
+  end
+
   def calculate(str)
-    result = @operation.calculate(str)
+    args = parse(str)
+    result = @operation.calculate(args[:a], args[:b])
     @printer.print(result)
     result
   end

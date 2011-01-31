@@ -1,4 +1,4 @@
-# Single Responsability Principle
+# Single Responsibility Principle
 #
 # AdditionOperation
 #   Is just responsible for adding two numbers together

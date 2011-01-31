@@ -1,4 +1,4 @@
-# Anti Single Responsability Principle
+# Anti Single Responsibility Principle
 #
 # Calculator
 #   Is responsible for parsing the input, calculating the result
